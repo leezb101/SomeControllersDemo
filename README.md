@@ -1,0 +1,2 @@
+# SomeControllersDemo
+一些常用特殊效果controller的demo，包括仿网易云音乐启动广告页转场动画、popover、presentationController等
