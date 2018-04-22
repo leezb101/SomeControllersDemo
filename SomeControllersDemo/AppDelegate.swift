@@ -16,6 +16,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let tabbarController = UITabBarController()
+        let firstVC = ViewController()
+        firstVC.view.backgroundColor = .red
+        firstVC.title = "first"
+        
+        let secondVC = SecondViewController()
+        secondVC.title = "second"
+        
+        let firstNavi = UINavigationController(rootViewController: firstVC)
+        let secondNavi = UINavigationController(rootViewController: secondVC)
+        tabbarController.viewControllers = [firstNavi, secondNavi]
+        tabbarController.selectedIndex = 0
+        
+        let launchVC: LaunchViewController = LaunchViewController()
+        launchVC.transitioningDelegate = self
+        launchVC.delayBlock = {[weak launchVC] in
+            guard launchVC != nil else { return }
+            launchVC!.dismiss(animated: true, completion: {
+                print("。。。")
+                tabbarController.transitioningDelegate = nil
+            })
+        }
+        
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        window.rootViewController = tabbarController
+        window.makeKeyAndVisible()
+        self.window = window
+        
+        tabbarController.present(launchVC, animated: false, completion: nil)
+        
         return true
     }
 
@@ -41,6 +72,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-
 }
 
+extension AppDelegate: UIViewControllerTransitioningDelegate {
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        if dismissed.isKind(of: LaunchViewController.self) {
+            return LaunchTransitionAnimation()
+        }
+        return nil
+    }
+}
